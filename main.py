@@ -67,7 +67,7 @@ while(True):
 	# Convert BGR to HSV
 	hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
-    # Threshold the HSV image to get only green colors
+    	# Threshold the HSV image to get only green colors
 	mask = cv.inRange(hsv, lower, upper)
 
 
@@ -78,7 +78,7 @@ while(True):
 
 	# loop over every object (we will probably only need one, but thats okay)
 
-	# Find biggest contour
+	# Find biggest contour (and in the mean time give every object a box)
 	num = 0
 	biggreen = None
 	max_area = 0
@@ -91,8 +91,15 @@ while(True):
 			biggreen = c
 			pos = num
 		num += 1
+		
+		# give a contour to every object
+		if area > args["min_area"]:
+			# calculate bounding box
+			(xc, yc, wc, hc) = cv2.boundingRect(c)
+			# draw
+			cv2.rectangle(frame, (xc, yc), (xc + wc, yc + hc), (0, 150, 0), 1)
 
-	if (	num > 0 									# Check if there is any green object 
+	if (	num > 0 # Check if there is any green object 
 		and int(cv.contourArea(biggreen)) > min_area):	# no noise
 		
 		# [ CALCULATE POSITION ]
